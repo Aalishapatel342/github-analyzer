@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitScope — GitHub Profile Analyzer</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Background grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <rect width="28" height="28" rx="8" fill="#0ff4c6"/>
+        <path d="M14 4C8.477 4 4 8.477 4 14c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0114 9.294c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0024 14c0-5.523-4.477-10-10-10z" fill="#0a0a0f"/>
+      </svg>
+      <span>GitScope</span>
+    </div>
+    <nav class="header-nav">
+      <a href="#" class="nav-link active">Analyzer</a>
+    </nav>
+  </header>
+
+  <!-- Hero Search -->
+  <section class="hero">
+    <div class="hero-eyebrow">GitHub Profile Intelligence</div>
+    <h1 class="hero-title">Decode any<br/><span class="accent">developer</span></h1>
+    <p class="hero-sub">Languages · Repositories · Contributions</p>
+
+    <div class="search-container">
+      <div class="search-box">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          type="text"
+          id="usernameInput"
+          class="search-input"
+          placeholder="Enter GitHub username…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="GitHub username"
+        />
+        <button class="search-btn" id="analyzeBtn" onclick="GitScope.analyze()" aria-label="Analyze profile">
+          <span class="btn-text">Analyze</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+      <div class="search-suggestions">
+        <span class="sugg-label">Try:</span>
+        <button class="sugg-chip" onclick="GitScope.loadSuggestion('torvalds')">torvalds</button>
+        <button class="sugg-chip" onclick="GitScope.loadSuggestion('gaearon')">gaearon</button>
+        <button class="sugg-chip" onclick="GitScope.loadSuggestion('Aalishapatel342')">Aalishapatel342</button>
+        <button class="sugg-chip" onclick="GitScope.loadSuggestion('sindresorhus')">sindresorhus</button>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="statusBar" class="status-bar hidden" role="status" aria-live="polite">
+      <div class="status-inner">
+        <div class="loader-dots" id="loaderDots" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <span id="statusText"></span>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="errorBox" class="error-box hidden" role="alert">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="errorText"></span>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <main id="results" class="results hidden" aria-label="Profile analysis results">
+
+    <!-- Profile Card -->
+    <section class="card profile-card" id="profileCard" aria-label="Profile overview"></section>
+
+    <!-- Stats Row -->
+    <div class="stats-grid" id="statsGrid" aria-label="Key statistics"></div>
+
+    <!-- Two Column -->
+    <div class="two-col">
+      <!-- Languages -->
+      <section class="card" aria-labelledby="langTitle">
+        <div class="card-header">
+          <h2 class="card-title" id="langTitle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Languages
+          </h2>
+          <span class="card-badge" id="langCount"></span>
+        </div>
+        <div id="langList" class="lang-list"></div>
+      </section>
+
+      <!-- Top Repos -->
+      <section class="card" aria-labelledby="repoTitle">
+        <div class="card-header">
+          <h2 class="card-title" id="repoTitle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h6l2 3H21v13a1 1 0 01-1 1H4a1 1 0 01-1-1z"/></svg>
+            Top Repos
+          </h2>
+          <span class="card-badge" id="repoCount"></span>
+        </div>
+        <div id="repoList" class="repo-list"></div>
+      </section>
+    </div>
+
+    <!-- Activity Timeline -->
+    <section class="card" aria-labelledby="actTitle">
+      <div class="card-header">
+        <h2 class="card-title" id="actTitle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Repository Activity
+        </h2>
+      </div>
+      <div id="activityChart" class="activity-chart" aria-label="Repository activity bar chart"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <span>Built with GitHub API</span>
+    <span class="footer-sep">·</span>
+    <a href="https://github.com" target="_blank">GitHub</a>
+  </footer>
+
+  <script src="js/colors.js"></script>
+  <script src="js/github.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
