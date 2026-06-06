@@ -8,7 +8,6 @@ A sleek, dark-themed GitHub profile analyzer built with vanilla HTML, CSS, and J
 - **Key Metrics** — repos, stars, forks, followers at a glance
 - **Language Breakdown** — most-used languages ranked by repo count with GitHub colors
 - **Top Repositories** — highest-starred repos with descriptions and stats
-- **AI Developer Profile** — Claude generates a personalized 3-4 sentence insight
 - **Activity Chart** — repo activity across the last 12 months
 - **Keyboard Shortcuts** — press `/` to focus search, `Enter` to analyze
 - **URL Params** — share links like `index.html?user=torvalds`
